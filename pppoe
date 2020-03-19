@@ -1,0 +1,46 @@
+process=$(pgrep pppoe)
+path_to_script="/opt/scripts/pppoe.sh"
+path_to_log="/var/log/pppoe.log"
+
+case $1 in
+    start)
+        if [ -z $process ]; then
+            $path_to_script >> $path_to_log &
+	    echo "Starting PPPOE OK"
+        else
+            echo "ERROR"
+            echo "PPPOE alredy running"
+        fi
+    ;;
+
+    stop)
+        if [ -z $process ]; then
+            echo "ERROR"
+            echo "PPPOE is no running"
+        else
+            echo "Stoping PPPOE OK"
+            kill -9 $process > /dev/null 2>&1
+        fi
+    ;;
+
+    restart)
+        kill -9 $process > /dev/null 2>&1
+	$path_to_script >> $path_to_log &
+        echo "Restarting PPPOE OK"
+    ;;
+
+    status)
+        if [ -z $process ]; then
+            echo "PPPOE is no running"
+        else
+            echo "PPPOE running"
+	    echo "PPPOE: $process"
+	fi
+    ;;
+    *)
+        echo "Usage /etc/init.d/ddns start|stop|restart|status"
+        exit 1
+    ;;
+
+esac
+
